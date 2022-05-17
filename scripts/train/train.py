@@ -762,14 +762,3 @@ print("a3 Accuracy: {}".format(a3_acc))
 print("Time taken: {} seconds\n".format(end-start))
 print("\n\n")
     
-# Debug stats 
-
-"""
-RESULTS TO BEAT
-Dev	79.57  
-A1	78.42
-A2	71.97
-A3	70.03
-"""
-
-# NO SKIP CONNECTION + NO KNOWLEDGE
