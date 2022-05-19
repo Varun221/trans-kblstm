@@ -3,6 +3,7 @@ from tqdm import tqdm
 from tqdm import tqdm
 import torch
 import re
+import os
 import numpy as np
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -75,3 +76,11 @@ def get_glove(dim):
 
             vect = np.array(line[1:]).astype(float)
             gloves[word] = vect
+
+def seed_everything(SEED):
+    np.random.seed(SEED)
+    torch.manual_seed(SEED)
+    torch.cuda.manual_seed(SEED)
+    os.environ['PYTHONHASHSEED'] = str(SEED)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False

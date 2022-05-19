@@ -18,7 +18,7 @@ from sklearn.model_selection import train_test_split
 from sentence_transformers import SentenceTransformer
 
 from model import Infotab_model, Infotab_Transonly_model
-from utils import test, clean_sentence, get_glove
+from utils import test, clean_sentence, get_glove, seed_everything
 
 
 import time
@@ -202,15 +202,6 @@ tokenizer = RobertaTokenizer.from_pretrained(MODEL_NAME)
 
 if args.addtokenkb:
     tokenizer.add_special_tokens({'additional_special_tokens': ["<KNW>", "<SYN>", "<ANT>", "<HYPE>", "<HYPO>", "<CO_HYP>"]})
-
-
-def seed_everything(SEED):
-    np.random.seed(SEED)
-    torch.manual_seed(SEED)
-    torch.cuda.manual_seed(SEED)
-    os.environ['PYTHONHASHSEED'] = str(SEED)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
     
 seed_everything(args.seed)
 
@@ -231,23 +222,16 @@ else:
 
 # RELATIONAL MAPPING
 Rel_mapping = json.load("./relation_templates.json")
-
 Rels_list = list(Rel_mapping.keys())
-
 senttrans = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
-
 # compute embeddings
 Embeds = {}
 for k, v in tqdm(Rel_mapping.items()):
     Embeds[k] = senttrans.encode([v], show_progress_bar=False)
-
-
 def get_rel_vector(rels):
     Embeddings = [Embeds[x] for x in rels]
     finenc = np.mean(np.array(Embeddings), axis=0)
     return finenc
-
-
 
 LSTM_MAX_LEN = 200
 import ast
