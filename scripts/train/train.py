@@ -1,4 +1,5 @@
 # # imports
+import json
 import pandas as pd
 import numpy as np
 import csv
@@ -17,7 +18,7 @@ from sklearn.model_selection import train_test_split
 from sentence_transformers import SentenceTransformer
 
 from model import Infotab_model, Infotab_Transonly_model
-from utils import test
+from utils import test, clean_sentence, get_glove
 
 
 import time
@@ -46,14 +47,7 @@ args = parser.parse_args()
 
 
 # get glove embeds
-gloves = {}
-with open(f"./glove.6B.{args.glove_dim}d.txt", 'rb') as f:
-    for l in tqdm(f, total=400000):
-        line = l.decode().split()
-        word = line[0]
-
-        vect = np.array(line[1:]).astype(float)
-        gloves[word] = vect
+gloves = get_glove(args.glove_dim)
 
 
 # nltk for wordnet
@@ -64,22 +58,6 @@ import re
 stop_words = list(set(stopwords.words('english')))
 stop_words.extend(['(', ')'])
 stop_words = set(stop_words)
-
-# remove numbers and special characters to check words only
-def clean_sentence(line):
-    
-    line = line.lower()
-    
-    line = line.strip()
-
-    line = re.sub(r'\:(.*?)\:','',line)
-    line = re.sub('\[.*?\]', '', line)
-    line = re.sub('<.*?>+', '', line)
-    line = re.sub('\n', '', line)
-    
-    for ch in ")(:-.,°′\"\'%$+;/\#&?!_":
-        line = line.replace(ch, f" {ch} ")
-    return line
 
 # load wordnet
 f = open("../../data/pair_features.txt")
@@ -252,60 +230,7 @@ else:
 
 
 # RELATIONAL MAPPING
-Rel_mapping = {
-    'Antonym': 'is opposite of',
-    'AtLocation': 'is at location',
-    'CapableOf': 'is capable of',
-    'Causes': 'causes',
-    'CausesDesire': 'causes desire to',
-    'CreatedBy': 'is created by',
-    'DefinedAs': 'is defined as',
-    'DerivedFrom': 'is derived from',
-    'Desires': 'desires',
-    'DistinctFrom': 'is distinct from',
-    'Entails': 'entailes',
-    'EtymologicallyDerivedFrom': 'is etymologically derived from',
-    'EtymologicallyRelatedTo': 'is etymologically related to',
-    'ExternalURL': 'external url',
-    'FormOf': 'is a form of',
-    'HasA': 'has a',
-    'HasContext': 'has context',
-    'HasFirstSubevent': 'has first subevent',
-    'HasLastSubevent': 'has last subevent',
-    'HasPrerequisite': 'has prerequisite',
-    'HasProperty': 'has property',
-    'HasSubevent': 'has subevent',
-    'InstanceOf': 'is an instance of',
-    'IsA': 'is a',
-    'LocatedNear': 'is located near',
-    'MadeOf': 'is made of',
-    'MannerOf': 'is manner of',
-    'MotivatedByGoal': 'is motivated by goal',
-    'NotCapableOf': 'is not capable of',
-    'NotDesires': 'does not desire',
-    'NotHasProperty': 'does not have property',
-    'PartOf': 'is part of',
-    'ReceivesAction': 'receives action',
-    'RelatedTo': 'is related to',
-    'SimilarTo': 'is similar to',
-    'SymbolOf': 'is a symbol of',
-    'Synonym': 'is same as',
-    'UsedFor': 'is used for',
-    'dbpedia/capital': 'has capital',
-    'dbpedia/field': 'has field',
-    'dbpedia/genre': 'has genre',
-    'dbpedia/genus': 'has genus',
-    'dbpedia/influencedBy': 'is influenced by',
-    'dbpedia/knownFor': 'is known for',
-    'dbpedia/language': 'has language',
-    'dbpedia/leader': 'has leader',
-    'dbpedia/occupation': 'has occupation',
-    'dbpedia/product': 'has product',
-    'Hypernym': 'is hypernym of',
-    'Hyponym': 'is hyponym of',
-    'Co-Hyponym': 'is co-hyponym of'
-    
-}
+Rel_mapping = json.load("./relation_templates.json")
 
 Rels_list = list(Rel_mapping.keys())
 

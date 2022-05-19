@@ -1,14 +1,9 @@
 
 from tqdm import tqdm
-
-
 from tqdm import tqdm
 import torch
-
-
-
-
-
+import re
+import numpy as np
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -49,3 +44,34 @@ def test(model, dataloader, TRAIN_MODEL):
 
     model.train()
     return correct/total, gold_inds, predictions_inds
+
+
+
+
+# remove numbers and special characters to check words only
+def clean_sentence(line):
+    
+    line = line.lower()
+    
+    line = line.strip()
+
+    line = re.sub(r'\:(.*?)\:','',line)
+    line = re.sub('\[.*?\]', '', line)
+    line = re.sub('<.*?>+', '', line)
+    line = re.sub('\n', '', line)
+    
+    for ch in ")(:-.,°′\"\'%$+;/\#&?!_":
+        line = line.replace(ch, f" {ch} ")
+    return line
+
+
+# read glove embeddings
+def get_glove(dim):
+    gloves = {}
+    with open(f"../../data/glove.6B.{dim}d.txt", 'rb') as f:
+        for l in tqdm(f, total=400000):
+            line = l.decode().split()
+            word = line[0]
+
+            vect = np.array(line[1:]).astype(float)
+            gloves[word] = vect
