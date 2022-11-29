@@ -109,9 +109,9 @@ def Add_knowledge(prem, hyp):
         else:
             vec = kb_dict[p[1]][p[0]]
         if(vec[0] != 0):
-            knwsent += "<HYPE> "
-        if(vec[1] != 0):
             knwsent += "<HYPO> "
+        if(vec[1] != 0):
+            knwsent += "<HYPE> "
         if(vec[2] != 0):
             knwsent += "<CO_HYP> "
         if(vec[3] != 0):
