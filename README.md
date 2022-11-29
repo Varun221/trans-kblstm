@@ -113,3 +113,55 @@ python train_custom.py \
 ```
 
 
+## Recommended Citations
+
+```
+
+@inproceedings{varun-etal-2022-trans,
+    title = "Trans-{KBLSTM}: An External Knowledge Enhanced Transformer {B}i{LSTM} Model for Tabular Reasoning",
+    author = "Varun, Yerram  and
+      Sharma, Aayush  and
+      Gupta, Vivek",
+    booktitle = "Proceedings of Deep Learning Inside Out (DeeLIO 2022): The 3rd Workshop on Knowledge Extraction and Integration for Deep Learning Architectures",
+    month = may,
+    year = "2022",
+    address = "Dublin, Ireland and Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2022.deelio-1.7",
+    pages = "62--78",
+    abstract = "Natural language inference on tabular data is a challenging task. Existing approaches lack the world and common sense knowledge required to perform at a human level. While massive amounts of KG data exist, approaches to integrate them with deep learning models to enhance tabular reasoning are uncommon. In this paper, we investigate a new approach using BiLSTMs to incorporate knowledge effectively into language models. Through extensive analysis, we show that our proposed architecture, Trans-KBLSTM improves the benchmark performance on InfoTabS, a tabular NLI dataset.",
+}
+
+@inproceedings{gupta-etal-2020-infotabs,
+    title = "{INFOTABS}: Inference on Tables as Semi-structured Data",
+    author = "Gupta, Vivek  and
+      Mehta, Maitrey  and
+      Nokhiz, Pegah  and
+      Srikumar, Vivek",
+    booktitle = "Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics",
+    month = jul,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/2020.acl-main.210",
+    pages = "2309--2324",
+    abstract = "In this paper, we observe that semi-structured tabulated text is ubiquitous; understanding them requires not only comprehending the meaning of text fragments, but also implicit relationships between them. We argue that such data can prove as a testing ground for understanding how we reason about information. To study this, we introduce a new dataset called INFOTABS, comprising of human-written textual hypotheses based on premises that are tables extracted from Wikipedia info-boxes. Our analysis shows that the semi-structured, multi-domain and heterogeneous nature of the premises admits complex, multi-faceted reasoning. Experiments reveal that, while human annotators agree on the relationships between a table-hypothesis pair, several standard modeling strategies are unsuccessful at the task, suggesting that reasoning about tables can pose a difficult modeling challenge.",
+}
+
+@inproceedings{neeraja-etal-2021-incorporating,
+    title = "Incorporating External Knowledge to Enhance Tabular Reasoning",
+    author = "Neeraja, J.  and
+      Gupta, Vivek  and
+      Srikumar, Vivek",
+    booktitle = "Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+    month = jun,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/2021.naacl-main.224",
+    pages = "2799--2809",
+    abstract = "Reasoning about tabular information presents unique challenges to modern NLP approaches which largely rely on pre-trained contextualized embeddings of text. In this paper, we study these challenges through the problem of tabular natural language inference. We propose easy and effective modifications to how information is presented to a model for this task. We show via systematic experiments that these strategies substantially improve tabular inference performance.",
+}
+
+```
+
