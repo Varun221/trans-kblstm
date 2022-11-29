@@ -1,0 +1,7 @@
+pandas==1.2.4
+tqdm==4.62.3
+nltk==3.5
+torch==1.8.1
+transformers==4.21.1
+sklearn==0.24.2
+sentence-transformers==2.1.0

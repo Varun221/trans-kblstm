@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from transformers import RobertaTokenizer, RobertaModel
+from transformers import RobertaModel
 import torch.nn.functional as F
 
 

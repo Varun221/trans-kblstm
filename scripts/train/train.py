@@ -8,13 +8,8 @@ import random
 import torch
 
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-import transformers
-from sklearn.model_selection import train_test_split
 from sentence_transformers import SentenceTransformer
 
 from model import Infotab_model, Infotab_Transonly_model
@@ -22,10 +17,9 @@ from utils import test, clean_sentence, get_glove, seed_everything
 
 
 import time
-import copy
 from tqdm.notebook import tqdm
 
-from transformers import RobertaTokenizer, RobertaModel
+from transformers import RobertaTokenizer
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -40,7 +34,7 @@ parser.add_argument("--glove_dim", type=int, default=300, help="Glove dimension"
 parser.add_argument("--seed", type=int, default=42, help="Seed for training")
 parser.add_argument("--data_percent", type=int, default=50, help="Percentage of data to train")
 parser.add_argument("--gold", type=bool, default=False, help="Training on Gold data")
-parser.add_argument("--kg_exp", type=bool, default=False, help="Training on Knowledge et al")
+parser.add_argument("--kg_exp", type=bool, default=False, help="Training on Knowledge Infotabs et al")
 parser.add_argument("--savepath", type=str, default="./", help="Model Save path")
 
 args = parser.parse_args()
@@ -53,6 +47,7 @@ gloves = get_glove(args.glove_dim)
 # nltk for wordnet
 import nltk
 nltk.download("stopwords")
+
 from nltk.corpus import stopwords
 import re
 stop_words = list(set(stopwords.words('english')))
@@ -122,12 +117,10 @@ def Add_knowledge(prem, hyp):
     final = "<s> " + prem + " </s> " + hyp + " " + knwsent
     return final
 
-# clone repositories for data
-# !git clone https://github.com/utahnlp/knowledge_infotabs.git
-# !git clone https://github.com/infotabs/infotabs.git
+
+# Remember to place the data in the datafolder.
 
 # Make Word collection
-#@title Make word collection
 print("Loading datasets...")
 dfs = []
 
@@ -144,11 +137,11 @@ elif args.kg_exp:
     dfs.append(pd.read_csv("../../data/kg_explicit/test_alpha2.tsv", delimiter='\t'))
     dfs.append(pd.read_csv("../../data/kg_explicit/test_alpha3.tsv", delimiter='\t'))
 else:
-    dfs.append(pd.read_csv("./knowledge_infotabs/temp/data/drr_ablation/train.tsv", delimiter='\t'))
-    dfs.append(pd.read_csv("./knowledge_infotabs/temp/data/drr_ablation/dev.tsv", delimiter='\t'))
-    dfs.append(pd.read_csv("./knowledge_infotabs/temp/data/drr_ablation/test_alpha1.tsv", delimiter='\t'))
-    dfs.append(pd.read_csv("./knowledge_infotabs/temp/data/drr_ablation/test_alpha2.tsv", delimiter='\t'))
-    dfs.append(pd.read_csv("./knowledge_infotabs/temp/data/drr_ablation/test_alpha3.tsv", delimiter='\t'))
+    dfs.append(pd.read_csv("../../data/kinfotabs_original/train.tsv", delimiter='\t'))
+    dfs.append(pd.read_csv("../../data/kinfotabs_original/dev.tsv", delimiter='\t'))
+    dfs.append(pd.read_csv("../../data/kinfotabs_original/test_alpha1.tsv", delimiter='\t'))
+    dfs.append(pd.read_csv("../../data/kinfotabs_original/test_alpha2.tsv", delimiter='\t'))
+    dfs.append(pd.read_csv("../../data/kinfotabs_original/test_alpha3.tsv", delimiter='\t'))
     
 
 
@@ -224,6 +217,7 @@ else:
 Rel_mapping = json.load("./relation_templates.json")
 Rels_list = list(Rel_mapping.keys())
 senttrans = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
+
 # compute embeddings
 Embeds = {}
 for k, v in tqdm(Rel_mapping.items()):
@@ -319,7 +313,6 @@ class Infotab_dataset(Dataset):
 
 
 # MODEL
-import pickle as pkl
 
 if args.addkb:
     TRAIN_MODEL = 'trans_lstm'
@@ -376,10 +369,10 @@ elif args.kg_exp:
     dev = pd.read_csv("../../data/kg_explicit/dev.tsv", delimiter='\t')
 
 else:
-    alpha1 = pd.read_csv("../../data/Infotabs/temp/a1_with_lstmrels.csv")
-    alpha2 = pd.read_csv("../../data/Infotabs/temp/a2_with_lstmrels.csv")
-    alpha3 = pd.read_csv("../../data/Infotabs/temp/a3_with_lstmrels.csv")
-    dev = pd.read_csv("../../data/Infotabs/temp/dev_with_lstmrels.csv")
+    alpha1 = pd.read_csv("../../data/kinfotabs_withrels/a1_with_lstmrels.csv")
+    alpha2 = pd.read_csv("../../data/kinfotabs_withrels/a2_with_lstmrels.csv")
+    alpha3 = pd.read_csv("../../data/kinfotabs_withrels/a3_with_lstmrels.csv")
+    dev = pd.read_csv("../../data/kinfotabs_withrels/dev_with_lstmrels.csv")
 
 
 # dataloaders

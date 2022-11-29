@@ -1,29 +1,16 @@
 import pandas as pd
-import numpy as np
-import csv
-import os
-import random
-import torch
-
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-from torchaudio import save_encinfo
-import transformers
-from sklearn.model_selection import train_test_split
-
-import time
-import copy
 from tqdm import tqdm
-
-import transformers
-
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
 import argparse
+
+# using stopwords from nltk
+import nltk
+nltk.download('stopwords')
+
+from nltk.corpus import stopwords
+import re
+
+# relation mappings stored in ../train/relation_templates.json
+import json
 
 parser = argparse.ArgumentParser(description='Get_file_name')
 
@@ -42,8 +29,7 @@ else:
     df = pd.read_csv(file_path, delimiter='\t')
 
 
-from nltk.corpus import stopwords
-import re
+
 stop_words = list(set(stopwords.words('english')))
 stop_words.extend(['(', ')'])
 stop_words = set(stop_words)
@@ -67,64 +53,31 @@ def clean_sentence(line):
 
 
 # get knowledge database
-comb = pd.read_csv("../../data/knowledge_db/Full_Knowledge_db.csv")
+comb = pd.read_csv("../../data/Conceptnet_Wordnet_full.csv")
 
-Rel_mapping = {
-    'Antonym': 'is opposite of',
-    'AtLocation': 'is at location',
-    'CapableOf': 'is capable of',
-    'Causes': 'causes',
-    'CausesDesire': 'causes desire to',
-    'CreatedBy': 'is created by',
-    'DefinedAs': 'is defined as',
-    'DerivedFrom': 'is derived from',
-    'Desires': 'desires',
-    'DistinctFrom': 'is distinct from',
-    'Entails': 'entailes',
-    'EtymologicallyDerivedFrom': 'is etymologically derived from',
-    'EtymologicallyRelatedTo': 'is etymologically related to',
-    'ExternalURL': 'external url',
-    'FormOf': 'is a form of',
-    'HasA': 'has a',
-    'HasContext': 'has context',
-    'HasFirstSubevent': 'has first subevent',
-    'HasLastSubevent': 'has last subevent',
-    'HasPrerequisite': 'has prerequisite',
-    'HasProperty': 'has property',
-    'HasSubevent': 'has subevent',
-    'InstanceOf': 'is an instance of',
-    'IsA': 'is a',
-    'LocatedNear': 'is located near',
-    'MadeOf': 'is made of',
-    'MannerOf': 'is manner of',
-    'MotivatedByGoal': 'is motivated by goal',
-    'NotCapableOf': 'is not capable of',
-    'NotDesires': 'does not desire',
-    'NotHasProperty': 'does not have property',
-    'PartOf': 'is part of',
-    'ReceivesAction': 'receives action',
-    'RelatedTo': 'is related to',
-    'SimilarTo': 'is similar to',
-    'SymbolOf': 'is a symbol of',
-    'Synonym': 'is same as',
-    'UsedFor': 'is used for',
-    'dbpedia/capital': 'has capital',
-    'dbpedia/field': 'has field',
-    'dbpedia/genre': 'has genre',
-    'dbpedia/genus': 'has genus',
-    'dbpedia/influencedBy': 'is influenced by',
-    'dbpedia/knownFor': 'is known for',
-    'dbpedia/language': 'has language',
-    'dbpedia/leader': 'has leader',
-    'dbpedia/occupation': 'has occupation',
-    'dbpedia/product': 'has product'
-    
-}
+with open("../train/relation_templates.json") as json_file:
+    Rel_mapping = json.load(json_file)
+
 
 Rels_list = list(Rel_mapping.keys())
 
+# all possible unique wordpairs in the dataset
 word_pairs = set(list(zip(comb['word1'], comb['word2'])))
 
+
+'''
+Each premise and hypothesis pair is appended with a list of relational connections. 
+
+(word1, index of word1), (word2, index of word2), 0/1, relations between word1 -> word2
+
+The relations are directional where =>
+
+0  => relation is from premise word -> hypothesis word
+1  => relation is from hypothesis word -> premise word
+
+'''
+
+# loop over the dataset
 for i in tqdm(range(len(df))):
     prem = df.loc[i, 'premise']
     hyp = df.loc[i, 'hypothesis']
@@ -132,6 +85,7 @@ for i in tqdm(range(len(df))):
     premwords = clean_sentence(prem).split()
     hypwords = clean_sentence(hyp).split()
 
+    # keep count of relations
     m = 0
     corres = []
     for w1ind, w1 in enumerate(premwords):
