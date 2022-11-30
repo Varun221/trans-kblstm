@@ -109,11 +109,16 @@ python Relation_generator.py \
 cd scripts/train
 python train_custom.py \
 --train_path ../../data/ kinfotabs_withrels/train_with_lstmrels.csv \
---val_path ../../data/kinfotabs_withrels/dev_with_lstmrels.csv
+--val_path ../../data/kinfotabs_withrels/dev_with_lstmrels.csv \
+--addkb \
+--batchsize 5 \
+--glove_dim 100
 ```
 
 
 ## Recommended Citations
+
+Kindly cite our work, if you find it helpful.
 
 ```
 
@@ -130,22 +135,6 @@ python train_custom.py \
     url = "https://aclanthology.org/2022.deelio-1.7",
     pages = "62--78",
     abstract = "Natural language inference on tabular data is a challenging task. Existing approaches lack the world and common sense knowledge required to perform at a human level. While massive amounts of KG data exist, approaches to integrate them with deep learning models to enhance tabular reasoning are uncommon. In this paper, we investigate a new approach using BiLSTMs to incorporate knowledge effectively into language models. Through extensive analysis, we show that our proposed architecture, Trans-KBLSTM improves the benchmark performance on InfoTabS, a tabular NLI dataset.",
-}
-
-@inproceedings{gupta-etal-2020-infotabs,
-    title = "{INFOTABS}: Inference on Tables as Semi-structured Data",
-    author = "Gupta, Vivek  and
-      Mehta, Maitrey  and
-      Nokhiz, Pegah  and
-      Srikumar, Vivek",
-    booktitle = "Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics",
-    month = jul,
-    year = "2020",
-    address = "Online",
-    publisher = "Association for Computational Linguistics",
-    url = "https://www.aclweb.org/anthology/2020.acl-main.210",
-    pages = "2309--2324",
-    abstract = "In this paper, we observe that semi-structured tabulated text is ubiquitous; understanding them requires not only comprehending the meaning of text fragments, but also implicit relationships between them. We argue that such data can prove as a testing ground for understanding how we reason about information. To study this, we introduce a new dataset called INFOTABS, comprising of human-written textual hypotheses based on premises that are tables extracted from Wikipedia info-boxes. Our analysis shows that the semi-structured, multi-domain and heterogeneous nature of the premises admits complex, multi-faceted reasoning. Experiments reveal that, while human annotators agree on the relationships between a table-hypothesis pair, several standard modeling strategies are unsuccessful at the task, suggesting that reasoning about tables can pose a difficult modeling challenge.",
 }
 
 @inproceedings{neeraja-etal-2021-incorporating,
