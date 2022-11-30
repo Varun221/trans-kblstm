@@ -1,7 +1,7 @@
 <h1> TRANS-KBLSTM : An External Knowledge Enhance Transformer BiLSTM for Tabular Reasoning </h1>
 <img src="./trans-kblstm.png"/>
 
-Implementation of TRANS-KBLSTM, our DeeLIO@ACL 2022 paper: 
+Implementation of TRANS-KBLSTM, winner of <strong> Best Paper award </strong> at DeeLIO@ACL 2022 paper: 
 <a href="https://vgupta123.github.io/docs/TransKBLSTM.pdf"> TRANS-KBLSTM : An External Knowledge Enhance Transformer BiLSTM for Tabular Reasoning </a>
 
 
